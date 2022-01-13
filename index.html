@@ -8,6 +8,12 @@
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.css" rel="stylesheet" />
+    
+    <!-- min -->
+<script src="https://unpkg.com/mb-layerswitcher@1.0.1/mapbox-layerswitcher.min.js"></script>
+
+<!-- Unminified -->
+<script src="https://unpkg.com/mb-layerswitcher@1.0.1/mapbox-layerswitcher.js"></script>
 
     <style>
         body {
@@ -38,6 +44,12 @@
 </head>
 
 <body>
+  
+  <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
+<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css" type="text/css">
+
+<script src="node_modules/mapbox-gl-gl-style-switcher/dist/index.js" type="application/javascript"></script>
+
     <div id="map">
         <div id="logoContainer">
             <img src="https://raw.githubusercontent.com/ThamesEstuaryPartnership/followingthetide/master/TEP%20logo%20no%20background.png"
@@ -47,6 +59,7 @@
 
     <script>
         mapboxgl.accessToken = 'pk.eyJ1Ijoid2FuZGFib2RuYXIiLCJhIjoiY2tjbG4xd3p0MjRwcDJycGZ0YWpqcjVobCJ9.3U_AmR38W__wuBjUjqWC3Q';
+        
         var map = (window.map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/dark-v10',
@@ -56,6 +69,13 @@
             zoom: 9.8,
             minZoom: 1
         }));
+        
+        map.addControl(
+new MapboxGeocoder({
+accessToken: mapboxgl.accessToken,
+mapboxgl: mapboxgl
+})
+);
 
         class PitchToggle {
             constructor({ bearing = 0, pitch = 40, minpitchzoom = null }) {
@@ -105471,6 +105491,14 @@
             return ['interpolate', ['linear'], ['line-progress']].concat(
                 sides.reduce((a, b) => { return b.concat(a); }, []));
         }
+        
+        const scale = new mapboxgl.ScaleControl({
+maxWidth: 80,
+unit: 'imperial'
+});
+map.addControl(scale);
+ 
+scale.setUnit('metric');
 
         map.on('load', function () {
             map.addSource('line', {
