@@ -112,14 +112,6 @@
         );
         map.addControl(new PitchToggle({ minpitchzoom: 11 }), "top-right");
 
-        var marker1 = new mapboxgl.Marker()
-            .setLngLat([0.7182, 51.4606])
-            .addTo(map);
-
-        var marker2 = new mapboxgl.Marker()
-            .setLngLat([-0.3238653, 51.4317815])
-            .addTo(map);
-
         var geojson = {
   "type": "FeatureCollection",
   "features": [
