@@ -14,8 +14,10 @@
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.css" rel="stylesheet" />
 
-    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
-    <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css" rel="stylesheet"">
+    <script
+        src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css"
+        rel="stylesheet">
 
     <style>
         body {
@@ -42,10 +44,17 @@
 
 <body>
 
+    <style>
+        .mapboxgl-popup {
+            max-width: 400px;
+            font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+        }
+    </style>
+
     <div id="map"></div>
 
     <script>
-        
+
         /// Token
 
         mapboxgl.accessToken = 'pk.eyJ1Ijoid2FuZGFib2RuYXIiLCJhIjoiY2tjbG4xd3p0MjRwcDJycGZ0YWpqcjVobCJ9.3U_AmR38W__wuBjUjqWC3Q';
@@ -117,7 +126,7 @@
 
         /// Search - left
 
-        map.addControl(new MapboxGeocoder({accessToken: mapboxgl.accessToken, mapboxgl: mapboxgl}), "top-left");
+        map.addControl(new MapboxGeocoder({ accessToken: mapboxgl.accessToken, mapboxgl: mapboxgl }), "top-left");
 
         /// Controls - right
 
@@ -199,6 +208,21 @@
             return ['interpolate', ['linear'], ['line-progress']].concat(
                 sides.reduce((a, b) => { return b.concat(a); }, []));
         }
+
+        map.on('click', 'line', (e) => {
+            new mapboxgl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML(e.features[0].properties.name)
+                .addTo(map);
+        });
+
+        map.on('mouseenter', 'line', () => {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+
+        map.on('mouseleave', 'line', () => {
+            map.getCanvas().style.cursor = '';
+        });
 
         /// Scale
 
