@@ -46,15 +46,20 @@
     <script>
         mapboxgl.accessToken = 'pk.eyJ1Ijoid2FuZGFib2RuYXIiLCJhIjoiY2tjbG4xd3p0MjRwcDJycGZ0YWpqcjVobCJ9.3U_AmR38W__wuBjUjqWC3Q';
         
-        var map = (window.map = new mapboxgl.Map({
+        const map = (window.map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/dark-v10',
             center: [0.18, 51.4944],
             pitch: 30,
             bering: 0,
             zoom: 9.8,
-            minZoom: 1
+            minZoom: 1,
+            attributionControl: false
         }));
+        
+        map.addControl(new mapboxgl.AttributionControl({
+customAttribution: 'Data: <a href="https://www.nationaltrail.co.uk/en_GB/trails/thames-path/trail-information/">National Trail</a> | Design: <a href="https://www.thamesestuarypartnership.org/">Thames Estuary Partnership</a>'
+}), 'bottom-right');
         
         map.addControl(
 new MapboxGeocoder({
