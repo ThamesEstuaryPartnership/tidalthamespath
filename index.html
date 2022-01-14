@@ -124,9 +124,11 @@
             }
         }
 
-        /// Search - left
+        /// Search - right
 
-        map.addControl(new MapboxGeocoder({ accessToken: mapboxgl.accessToken, mapboxgl: mapboxgl }), "top-left");
+        map.addControl(new MapboxGeocoder({ 
+            accessToken: mapboxgl.accessToken, mapboxgl: mapboxgl, collapsed: true}), 
+            "top-right");
 
         /// Controls - right
 
@@ -136,8 +138,7 @@
 
         map.addControl(new mapboxgl.GeolocateControl({
             positionOptions: {
-                enableHighAccuracy: true
-            },
+                enableHighAccuracy: true},
             trackUserLocation: true
         }), "top-right"
         );
