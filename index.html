@@ -1,14 +1,22 @@
 <!DOCTYPE html>
+
 <html>
 
 <head>
     <meta charset="utf-8" />
+
+    <meta name="author" content="Wanda Bodnar (Thames Estuary Partnership)">
+
     <title>Tidal Thames Path</title>
 
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.css" rel="stylesheet" />
-  
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css" rel="stylesheet"">
+
     <style>
         body {
             margin: 0;
@@ -29,23 +37,21 @@
         .mapboxgl-ctrl-pitchtoggle-2d {
             background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMCIgaGVpZ2h0PSIzMCI+ICAgIDx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkeT0iLjM1ZW0iIHN0eWxlPSJmb250LXNpemU6IDE0cHg7IGZvbnQtZmFtaWx5OiAnSGVsdmV0aWNhIE5ldWUnLEFyaWFsLEhlbHZldGljYSxzYW5zLXNlcmlmOyBmb250LXdlaWdodDogYm9sZDsgdGV4dC1hbmNob3I6IG1pZGRsZTsiPjJEPC90ZXh0Pjwvc3ZnPg==);
         }
-
     </style>
 </head>
 
 <body>
-  
-  <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
-<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css" type="text/css">
 
-<script src="node_modules/mapbox-gl-gl-style-switcher/dist/index.js" type="application/javascript"></script>
-
-    <div id="map">
-    </div>
+    <div id="map"></div>
 
     <script>
-        mapboxgl.accessToken = 'pk.eyJ1Ijoid2FuZGFib2RuYXIiLCJhIjoiY2tjbG4xd3p0MjRwcDJycGZ0YWpqcjVobCJ9.3U_AmR38W__wuBjUjqWC3Q';
         
+        /// Token
+
+        mapboxgl.accessToken = 'pk.eyJ1Ijoid2FuZGFib2RuYXIiLCJhIjoiY2tjbG4xd3p0MjRwcDJycGZ0YWpqcjVobCJ9.3U_AmR38W__wuBjUjqWC3Q';
+
+        /// Mapview
+
         const map = (window.map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/dark-v10',
@@ -56,17 +62,15 @@
             minZoom: 1,
             attributionControl: false
         }));
-        
+
+        /// Attribution
+
         map.addControl(new mapboxgl.AttributionControl({
-customAttribution: 'Data: <a href="https://www.nationaltrail.co.uk/en_GB/trails/thames-path/trail-information/" target="_blank">National Trail</a> | Design: <a href="https://www.thamesestuarypartnership.org/" target="_blank">Thames Estuary Partnership</a> | Source code: <a href="https://github.com/ThamesEstuaryPartnership/tidalthamespath/" target="_blank">Github</a>'
-}), 'bottom-right');
-        
-        map.addControl(
-new MapboxGeocoder({
-accessToken: mapboxgl.accessToken,
-mapboxgl: mapboxgl
-})
-);
+            customAttribution: 'Data: <a href="https://www.nationaltrail.co.uk/en_GB/trails/thames-path/trail-information/" target="_blank">National Trail</a> | Design: <a href="https://www.thamesestuarypartnership.org/" target="_blank">Thames Estuary Partnership</a> | Source code: <a href="https://github.com/ThamesEstuaryPartnership/tidalthamespath/" target="_blank">Github</a>'
+        }), 'bottom-right');
+
+        /// Pitch
+
         class PitchToggle {
             constructor({ bearing = 0, pitch = 40, minpitchzoom = null }) {
                 this._bearing = bearing;
@@ -111,8 +115,16 @@ mapboxgl: mapboxgl
             }
         }
 
+        /// Search - left
+
+        map.addControl(new MapboxGeocoder({accessToken: mapboxgl.accessToken, mapboxgl: mapboxgl}), "top-left");
+
+        /// Controls - right
+
         map.addControl(new mapboxgl.NavigationControl(), "top-right");
+
         map.addControl(new mapboxgl.FullscreenControl(), "top-right");
+
         map.addControl(new mapboxgl.GeolocateControl({
             positionOptions: {
                 enableHighAccuracy: true
@@ -120,38 +132,11 @@ mapboxgl: mapboxgl
             trackUserLocation: true
         }), "top-right"
         );
+
         map.addControl(new PitchToggle({ minpitchzoom: 11 }), "top-right");
 
-        const rainbow = [
-            '#089fda',
-            '#089fda',
-            '#089fda',
-            '#089fda',
-            '#089fda',
-            '#089fda',
-            '#089fda',
-            '#089fda',
-            '#af774e'
-        ];
+        /// Line and animation
 
-        function makeGradient(i) {
-            const len = rainbow.length;
-            const sides = rainbow.reduce((a, b, j) => {
-                const pos = (j / len + i) % 1 || 1;
-                a[a.length - 1].push(pos);
-                a[a.length - 1].push(b);
-                if (pos + 1 / len > 1) {
-                    a.push([]);
-                    a[a.length - 1].push(pos - 1);
-                    a[a.length - 1].push(b);
-                }
-                return a;
-            }, [[]]);
-
-            return ['interpolate', ['linear'], ['line-progress']].concat(
-                sides.reduce((a, b) => { return b.concat(a); }, []));
-        }
-        
         map.on('load', function () {
             map.addSource('line', {
                 type: 'geojson',
@@ -182,14 +167,48 @@ mapboxgl: mapboxgl
                 }, 1);
             }, 1000);
         });
-        
-                const scale = new mapboxgl.ScaleControl({
-maxWidth: 80,
-unit: 'imperial'
-});
-map.addControl(scale);
- 
-scale.setUnit('metric');
+
+        /// Colour and animation
+
+        const rainbow = [
+            '#089fda',
+            '#089fda',
+            '#089fda',
+            '#089fda',
+            '#089fda',
+            '#089fda',
+            '#089fda',
+            '#089fda',
+            '#af774e'
+        ];
+
+        function makeGradient(i) {
+            const len = rainbow.length;
+            const sides = rainbow.reduce((a, b, j) => {
+                const pos = (j / len + i) % 1 || 1;
+                a[a.length - 1].push(pos);
+                a[a.length - 1].push(b);
+                if (pos + 1 / len > 1) {
+                    a.push([]);
+                    a[a.length - 1].push(pos - 1);
+                    a[a.length - 1].push(b);
+                }
+                return a;
+            }, [[]]);
+
+            return ['interpolate', ['linear'], ['line-progress']].concat(
+                sides.reduce((a, b) => { return b.concat(a); }, []));
+        }
+
+        /// Scale
+
+        const scale = new mapboxgl.ScaleControl({
+            maxWidth: 80,
+            unit: 'imperial'
+        });
+        map.addControl(scale);
+
+        scale.setUnit('metric');
 
     </script>
 
